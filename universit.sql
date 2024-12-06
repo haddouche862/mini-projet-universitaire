@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : ven. 06 déc. 2024 à 17:06
+-- Généré le : ven. 06 déc. 2024 à 22:11
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `université`
+-- Base de données : `universit`
 --
 
 -- --------------------------------------------------------
@@ -250,7 +250,7 @@ ALTER TABLE `cours`
 -- AUTO_INCREMENT pour la table `cours_enseignants`
 --
 ALTER TABLE `cours_enseignants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT pour la table `enseignants`

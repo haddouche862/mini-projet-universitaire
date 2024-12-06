@@ -1,7 +1,7 @@
 <?php
 	// Param�tres de connexion
 	$serveur  = "localhost:3307";
-	$database = "université";
+	$database = "universit";
 	$user     = "root";
 	$password = "Younes.124";
 	
@@ -26,19 +26,20 @@
 		// Connexion � la base de donn�es
 		// $bdd est un objet correspondant � la connexion � la BDD
 		try {
-			// Connexion à la base de données avec PDO
-
-			$bdd = new PDO("mysql:host=localhost;dbname=université;charset=utf8", "root", "");
-		
-			// Requête pour récupérer toutes les données de la table 'bibliotheque'
-			$requete = $bdd->query('SELECT * FROM université');
+			$bdd = new PDO("mysql:host=localhost;dbname=universit;charset=utf8", "root", "");
 			
+			// Récupérer toutes les tables
+			$requete = $bdd->query('SHOW TABLES');
 			
-			
+			while ($table = $requete->fetch()) {
+				$tableName = $table[0];
+				
+				
+				$query = $bdd->query("SELECT * FROM $tableName");
+				
+			}
 		}
-	catch(Exception $e)
-	{
-		// On lance une fonction PHP qui permet de conna�tre l'erreur renvoy�e lors de la connection � la base (en r�cup�rant le message li� � l'exception)
-		die('<strong>Erreur d�tect�e !!! </strong> : ' . $e->getMessage());
-	}
+		catch(Exception $e) {
+			die('Erreur : ' . $e->getMessage());
+		}
 ?>
