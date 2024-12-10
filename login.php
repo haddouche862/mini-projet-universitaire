@@ -67,5 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p class="error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
     </div>
+
+    <footer>
+        <p>&copy; Maryem-alysson-kheira-ines</p>
+    </footer>
 </body>
 </html>

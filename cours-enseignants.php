@@ -4,7 +4,8 @@ session_start();
 // bdd
 include('inc.connexion.php'); 
 
-$id_prof = $_SESSION['id_prof']; 
+$id_prof = $_SESSION['user_id'];
+
 
 // Vérifier si l'enseignant est connecté && id dispo
 if (!isset($id_prof)) {
@@ -65,5 +66,8 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <footer>
+        <p>&copy; Maryem-alysson-kheira-ines</p>
+    </footer>
 </body>
 </html>

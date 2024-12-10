@@ -2,7 +2,7 @@
 session_start();
 include('inc.connexion.php');  // bdd
 
-// si utilisateur connecter
+// si utilisateur connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -27,16 +27,20 @@ function getStudentSchedule($user_id) {
         return []; 
     }
 
-    $query_cours = "SELECT c.nom, c.horaires_dates, c.salle_classe 
-                    FROM cours c
-                    WHERE c.formation = :formation OR c.formation = 'BOTH'";
+    // Recupere les cours du semestre 1
+    $query_cours = "SELECT c.nom, c.horaires_dates, c.salle_classe, 
+    DAYNAME(c.horaires_dates) AS jour, c.horaires_dates, c.code, c.credits
+    FROM cours c
+    WHERE (c.formation = :formation OR c.formation = 'BOTH') 
+    AND c.semestre = 2
+    ORDER BY c.horaires_dates"; // Tri par horaires
+
     $stmt_cours = $bdd->prepare($query_cours);
     $stmt_cours->bindParam(':formation', $formation, PDO::PARAM_STR);
     $stmt_cours->execute();
 
     return $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
 }
-
 
 function getAssignments($user_id) {
     global $bdd;
@@ -64,9 +68,29 @@ function getAssignments($user_id) {
     return $stmt_devoirs->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Récuperer l'emploi du temps et les devoirs
+
 $student_schedule = getStudentSchedule($user_id);
 $assignments = getAssignments($user_id);
+
+
+$days_of_week = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+$schedule_by_day = [
+    'Lundi' => [],
+    'Mardi' => [],
+    'Mercredi' => [],
+    'Jeudi' => [],
+    'Vendredi' => []
+];
+
+
+foreach ($student_schedule as $course) {
+    foreach ($days_of_week as $day) {
+        if (stripos($course['horaires_dates'], $day) !== false) {
+            $schedule_by_day[$day][] = $course;
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +99,8 @@ $assignments = getAssignments($user_id);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index Étudiant</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style.css">
+   
 </head>
 <body>
     <header>
@@ -83,40 +108,44 @@ $assignments = getAssignments($user_id);
         <p>Utilisateur connecté : <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong></p>
         <nav>
             <ul>
-                <li><a href="session_deconnexion.php">Se déconnecter</a></li>
-                <li><a href="profile.php">Mon Profil</a></li>
+                <li><a  class="btn" href="session_deconnexion.php">Se déconnecter</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section>
-            <h2>Mon Emploi du Temps</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cours</th>
-                        <th>Horaires</th>
-                        <th>Salle</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($student_schedule)) { ?>
-                        <tr>
-                            <td colspan="3">Aucun emploi du temps trouvé.</td>
-                        </tr>
-                    <?php } else { ?>
-                        <?php foreach ($student_schedule as $course) { ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($course['nom']); ?></td>
-                                <td><?php echo htmlspecialchars($course['horaires_dates']); ?></td>
-                                <td><?php echo htmlspecialchars($course['salle_classe']); ?></td>
-                            </tr>
-                        <?php } ?>
-                    <?php } ?>
-                </tbody>
-            </table>
-        </section>
+    <section>
+    <h2>Mon Emploi du Temps</h2>
+    <table>
+        <thead>
+            <tr>
+                <?php foreach ($days_of_week as $day) { ?>
+                    <th><?php echo $day; ?></th>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <?php foreach ($days_of_week as $day) { ?>
+                    <td>
+                        <?php 
+                        if (!empty($schedule_by_day[$day])) {
+                            foreach ($schedule_by_day[$day] as $course) {
+                                echo "<p><strong>" . htmlspecialchars($course['nom']) . "</strong><br>" . 
+                                     htmlspecialchars($course['horaires_dates']) . "<br>" . 
+                                     "<em>Salle : " . htmlspecialchars($course['salle_classe']) . "</em></p>";
+                            }
+                        } else {
+                            echo "Aucun cours.";
+                        }
+                        ?>
+                    </td>
+                <?php } ?>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
 
         <section>
             <h2>Mes Devoirs</h2>
@@ -144,18 +173,28 @@ $assignments = getAssignments($user_id);
                     <?php } ?>
                 </tbody>
             </table>
+            <a  class="btn" href="#.php" class="btn">Voir mes Devoirs</a>
         </section>
 
-        <section>
-            <div>
-                <a href="view_courses.php" class="btn">Voir mes Cours</a>
-                <a href="my_assignments.php" class="btn">Voir mes Devoirs</a>
+
+         <section>
+            <h2>Mes Cours</h2>
+            <div class="course-list">
+                <?php foreach ($student_schedule as $course) { ?>
+                    <div class="course-item">
+                        <h3><?php echo htmlspecialchars($course['nom']); ?></h3>
+                        <p class="code"><strong>Code :</strong> <?php echo htmlspecialchars($course['code']); ?></p>
+                        <p class="credits"><strong>Crédits :</strong> <?php echo htmlspecialchars($course['credits']); ?></p>
+                    </div>
+                <?php } ?>
             </div>
+            <a class="btn" href="#.php" class="btn">Voir mes Cours</a>
         </section>
+
     </main>
 
     <footer>
-        <p>&copy; 2024 Université - Tous droits réservés</p>
+        <p>&copy; Maryem-alysson-kheira-ines</p>
     </footer>
 </body>
 </html>
