@@ -265,12 +265,14 @@ ALTER TABLE `devoirs`
 --
 ALTER TABLE `enseignants`
   ADD PRIMARY KEY (`id`);
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Index pour la table `etudiants`
 --
 ALTER TABLE `etudiants`
   ADD PRIMARY KEY (`id`);
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
