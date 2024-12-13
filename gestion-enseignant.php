@@ -4,7 +4,7 @@ session_start();
 require 'inc.functions.php';
 require 'inc.connexion.php'; // Connexion à la base de données
 
-if (!isConnecte()) {
+if (!isset($_SESSION['user_id'])) {
     adddMessageAlert("Vous devez d'abord vous connecter.");
     header('Location: login.php');
     exit;
