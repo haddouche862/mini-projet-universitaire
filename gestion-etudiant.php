@@ -9,7 +9,7 @@ if (!isConnecte()) {
     adddMessageAlert("Vous devez d'abord vous connecter.");
     header('Location: login.php');
     exit;
-}
+    }
 
 // Variables pour afficher les messages d'erreur ou succès
 $error = '';
@@ -54,6 +54,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     } else {
         $error = "Veuillez remplir tous les champs.";
+    }
+}
+
+// Suppression d'un étudiant
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'supprimer') {
+    $etudiant_id = $_POST['etudiant_id'];
+
+    if (!empty($etudiant_id)) {
+        $query = "DELETE FROM etudiants WHERE id = ?";
+        $stmt = $bdd->prepare($query);
+        if ($stmt->execute([$etudiant_id])) {
+            $success = "Étudiant supprimé avec succès.";
+        } else {
+            $error = "Erreur lors de la suppression de l'étudiant.";
+        }
+    } else {
+        $error = "L'identifiant de l'étudiant est manquant.";
     }
 }
 
@@ -107,11 +124,14 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         <table border="1">
             <tr>
+                <th>ID</th>
                 <th>Identifiant</th>
                 <th>Formation</th>
+                <th>Supprimer l'étudiant</th>
             </tr>
             <?php foreach ($etudiants as $etudiant): ?>
                 <tr>
+                    <td><?php echo htmlspecialchars($etudiant['id']); ?></td>
                     <td><?php echo htmlspecialchars($etudiant['identifiant']); ?></td>
                     <td>
                         <form method="POST" style="display: inline;">
@@ -122,6 +142,13 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <option value="DEUST" <?php echo ($etudiant['formation'] === 'DEUST') ? 'selected' : ''; ?>>DEUST</option>
                             </select>
                             <button type="submit">Modifier</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="action" value="supprimer">
+                            <input type="hidden" name="etudiant_id" value="<?php echo $etudiant['id']; ?>">
+                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?');">Supprimer</button>
                         </form>
                     </td>
                 </tr>
@@ -141,5 +168,8 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Ajouter</button>
         </form>
     </div>
+    <footer>
+        <p>&copy; Maryem-alysson-kheira-ines</p>
+    </footer>
 </body>
 </html>
