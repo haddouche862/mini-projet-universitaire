@@ -1,6 +1,7 @@
 <?php 
 session_start();
 
+require 'inc.functions.php';
 require 'inc.connexion.php'; // Connexion à la base de données
 
 if (!isset($_SESSION['user_id'])) {
