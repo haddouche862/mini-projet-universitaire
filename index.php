@@ -150,8 +150,8 @@ $teachers = getTeachers();
         </tbody>
     </table>
     <div>
-                <a class="btn" href="gestion_cours.php">Gestion des cours</a>
-                <a class="btn" href="gestion_enseignants.php">Gestion des Enseignants</a>
+                <a class="btn" href="gestion_enseignant.php">Gestion des cours</a>
+                <a class="btn" href="gestion_etudiant.php">Gestion etudiant</a>
             </div>
 </section>
 
