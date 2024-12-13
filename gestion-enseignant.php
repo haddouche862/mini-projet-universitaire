@@ -15,48 +15,30 @@ $error = '';
 $success = '';
 
 // Ajout d'un nouvel enseignant
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajouter_enseignant') {
     $identifiant = $_POST['identifiant'];
     $role = $_POST['role']; // Récupération du rôle
    
-// Générer un mot de passe aléatoire
-$motdepasse = bin2hex(random_bytes(8)); // 16 caractères hexadécimaux
+    // Vérifier si l'identifiant existe déjà
+    $query_check = "SELECT COUNT(*) FROM enseignants WHERE identifiant = ?";
+    $stmt_check = $bdd->prepare($query_check);
+    $stmt_check->execute([$identifiant]);
+    $identifiant_exists = $stmt_check->fetchColumn();
 
-
-    if (!empty($identifiant) && !empty($role)) {
-        $query = "INSERT INTO enseignants (identifiant, motdepasse, role) VALUES (?, ?, ?)";
-        $stmt = $bdd->prepare($query);
-        if ($stmt->execute([$identifiant, $motdepasse, $role])) {
-            $success = "Nouvel enseignant ajouté avec succès.";
-        } else {
-            $error = "Erreur lors de l'ajout de l'enseignant.";
-        }
+    if ($identifiant_exists > 0) {
+        $error = "Cet identifiant est déjà utilisé. Veuillez en choisir un autre.";
     } else {
-        $error = "Veuillez remplir tous les champs.";
-    }
-}
+        // Générer un mot de passe aléatoire
+        $motdepasse = bin2hex(random_bytes(8)); // 16 caractères hexadécimaux
 
-// Attribution d'un cours à un enseignant
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'attribuer_cours') {
-    $id_prof = $_POST['id_prof'];
-    $id_cours = $_POST['id_cours'];
-
-    // Vérifier si l'enseignant a le rôle "admin"
-    $query_role = "SELECT role FROM enseignants WHERE id = ?";
-    $stmt_role = $bdd->prepare($query_role);
-    $stmt_role->execute([$id_prof]);
-    $role_enseignant = $stmt_role->fetchColumn();
-
-    if ($role_enseignant === 'admin') {
-        $error = "Un enseignant avec le rôle 'admin' ne peut pas être attribué à un cours.";
-    } else {
-        if (!empty($id_prof) && !empty($id_cours)) {
-            $query = "INSERT INTO cours_enseignants (id_prof, id_cours) VALUES (?, ?)";
+        if (!empty($identifiant) && !empty($role)) {
+            $query = "INSERT INTO enseignants (identifiant, motdepasse, role) VALUES (?, ?, ?)";
             $stmt = $bdd->prepare($query);
-            if ($stmt->execute([$id_prof, $id_cours])) {
-                $success = "Cours attribué avec succès.";
+            if ($stmt->execute([$identifiant, $motdepasse, $role])) {
+                $success = "Nouvel enseignant ajouté avec succès.";
             } else {
-                $error = "Erreur lors de l'attribution du cours.";
+                $error = "Erreur lors de l'ajout de l'enseignant.";
             }
         } else {
             $error = "Veuillez remplir tous les champs.";
@@ -64,20 +46,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+
+// Attribution d'un cours à un enseignant
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'attribuer_cours') {
+    $id_prof = $_POST['id_prof'];
+    $id_cours = $_POST['id_cours'];
+
+    // Vérifier si l'association existe déjà
+    $query_check = "SELECT COUNT(*) FROM cours_enseignants WHERE id_prof = ? AND id_cours = ?";
+    $stmt_check = $bdd->prepare($query_check);
+    $stmt_check->execute([$id_prof, $id_cours]);
+    $already_assigned = $stmt_check->fetchColumn();
+
+    if ($already_assigned > 0) {
+        $error = "Ce cours est déjà attribué à cet enseignant.";
+    } else {
+        // Vérifier si l'enseignant a le rôle "admin"
+        $query_role = "SELECT role FROM enseignants WHERE id = ?";
+        $stmt_role = $bdd->prepare($query_role);
+        $stmt_role->execute([$id_prof]);
+        $role_enseignant = $stmt_role->fetchColumn();
+
+        if ($role_enseignant === 'admin') {
+            $error = "Un enseignant avec le rôle 'admin' ne peut pas être attribué à un cours.";
+        } else {
+            if (!empty($id_prof) && !empty($id_cours)) {
+                $query = "INSERT INTO cours_enseignants (id_prof, id_cours) VALUES (?, ?)";
+                $stmt = $bdd->prepare($query);
+                if ($stmt->execute([$id_prof, $id_cours])) {
+                    $success = "Cours attribué avec succès.";
+                } else {
+                    $error = "Erreur lors de l'attribution du cours.";
+                }
+            } else {
+                $error = "Veuillez remplir tous les champs.";
+            }
+        }
+    }
+}
+
 // Suppression d'un enseignant
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'supprimer_enseignant') {
-    $id_enseignant = $_POST['id_prof'];
+    $id_prof = $_POST['id_prof'];
 
-    if (!empty($id_enseignant)) {
+    if (!empty($id_prof)) {
         // Supprimer les cours associés à l'enseignant
         $query_cours_enseignants = "DELETE FROM cours_enseignants WHERE id_prof = ?";
         $stmt_cours_enseignants = $bdd->prepare($query_cours_enseignants);
-        $stmt_cours_enseignants->execute([$id_enseignant]);
+        $stmt_cours_enseignants->execute([$id_prof]);
 
         // Supprimer l'enseignant
         $query_enseignant = "DELETE FROM enseignants WHERE id = ?";
         $stmt_enseignant = $bdd->prepare($query_enseignant);
-        if ($stmt_enseignant->execute([$id_enseignant])) {
+        if ($stmt_enseignant->execute([$id_prof])) {
             $success = "Enseignant supprimé avec succès.";
         } else {
             $error = "Erreur lors de la suppression de l'enseignant.";
@@ -87,15 +109,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+
+
 // Suppression d'un cours d'un enseignant
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'supprimer_cours') {
     $id_prof = $_POST['id_prof'];
     $id_cours = $_POST['id_cours'];
 
     if (!empty($id_prof) && !empty($id_cours)) {
-        // Déboguer les valeurs reçues
-        var_dump($id_prof, $id_cours);  // Debugging
-
+       
         // Supprimer l'association entre l'enseignant et le cours
         $query = "DELETE FROM cours_enseignants WHERE id_prof = ? AND id_cours = ?";
         $stmt = $bdd->prepare($query);
@@ -142,6 +164,11 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="container">
         <h1>Gestion des enseignants</h1>
+        <nav>
+            <ul>
+                <li><a class="btn" href="session_deconnexion.php">Se déconnecter</a></li>
+            </ul>
+        </nav>
 
         <!-- Messages -->
         <?php if (!empty($error)): ?>
@@ -190,8 +217,8 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
                     </td>
                     <td>
                         <form method="POST" style="display: inline;">
-                            <input type="hidden" name="action" value="supprimer">
-                            <input type="hidden" name="prof_id" value="<?php echo $enseignant['id']; ?>">
+                            <input type="hidden" name="action" value="supprimer_enseignant">
+                            <input type="hidden" name="id_prof" value="<?php echo $enseignant['id']; ?>">
                             <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?');">Supprimer</button>
                         </form>
                     </td>
@@ -203,6 +230,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
         <!-- Formulaire pour supprimer un cours d'un enseignant -->
         <h2>Supprimer un cours d'un enseignant</h2>
         <form method="POST">
+            <input type="hidden" name="action" value="supprimer_cours">
             <label>Enseignant :</label>
             <select name="id_prof" required>
                 <?php foreach ($enseignants as $enseignant): ?>
@@ -217,6 +245,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
             </select>
             <button type="submit">Supprimer</button>
         </form>
+
             
         <h2>Attribuer un cours</h2>
         <form method="POST">
@@ -250,6 +279,8 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Ajouter</button>
         </form>
         </div>
+        <a class="btn" href="index.php">Page Accueil</a>
+        <a class="btn" href="gestion-etudiant.php">Gestion étudiant</a>
 
         
     <footer>
