@@ -16,27 +16,42 @@ $success = '';
 
 // Ajout d'un nouvel étudiant
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajouter') {
-    $identifiant = $_POST['identifiant'];
+    $identifiant = trim($_POST['identifiant']);  // Élimine les espaces superflus
     $formation = $_POST['formation'];
 
-    // Générer un mot de passe aléatoire
-    $motdepasse = bin2hex(random_bytes(8)); // 16 caractères hexadécimaux
-
-    // Définir le rôle comme "étudiant" par défaut
-    $role = "etudiant";
-
-    if (!empty($identifiant) && !empty($formation)) {
-        $query = "INSERT INTO etudiants (identifiant, formation, motdepasse, role) VALUES (?, ?, ?, ?)";
-        $stmt = $bdd->prepare($query);
-        if ($stmt->execute([$identifiant, $formation, $motdepasse, $role])) {
-            $success = "Nouvel étudiant ajouté avec succès.";
-        } else {
-            $error = "Erreur lors de l'ajout de l'étudiant.";
-        }
+    // Vérification de la validité de l'identifiant (ex : uniquement alphanumérique)
+    if (!preg_match('/^[a-zA-Z0-9]+$/', $identifiant)) {
+        $error = "L'identifiant doit être alphanumérique.";
     } else {
-        $error = "Veuillez remplir tous les champs.";
+        // Vérification de l'existence de l'identifiant dans la base de données
+        $query = "SELECT COUNT(*) FROM etudiants WHERE identifiant = ?";
+        $stmt = $bdd->prepare($query);
+        $stmt->execute([$identifiant]);
+        $existing = $stmt->fetchColumn();
+
+        if ($existing > 0) {
+            // Si l'identifiant existe déjà
+            $error = "Cet identifiant est déjà utilisé. Veuillez en choisir un autre.";
+        } else {
+            // Générer un mot de passe aléatoire
+            $motdepasse = bin2hex(random_bytes(8)); // 16 caractères hexadécimaux
+            $role = "etudiant";
+
+            if (!empty($identifiant) && !empty($formation)) {
+                $query = "INSERT INTO etudiants (identifiant, formation, motdepasse, role) VALUES (?, ?, ?, ?)";
+                $stmt = $bdd->prepare($query);
+                if ($stmt->execute([$identifiant, $formation, $motdepasse, $role])) {
+                    $success = "Nouvel étudiant ajouté avec succès.";
+                } else {
+                    $error = "Erreur lors de l'ajout de l'étudiant. Veuillez réessayer.";
+                }
+            } else {
+                $error = "Veuillez remplir tous les champs.";
+            }
+        }
     }
 }
+
 
 // Mise à jour de la formation d'un étudiant
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'modifier') {
@@ -99,6 +114,11 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="container">
         <h1>Gestion des étudiants</h1>
+        <nav>
+            <ul>
+                <li><a class="btn" href="session_deconnexion.php">Se déconnecter</a></li>
+            </ul>
+        </nav>
 
         <!-- Messages -->
         <?php if (!empty($error)): ?>
@@ -167,6 +187,8 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Ajouter</button>
         </form>
     </div>
+    <a class="btn" href="index.php">Page Accueil</a>
+    <a class="btn" href="gestion-enseignant.php">Gestion enseignant</a>
     <footer>
         <p>&copy; Maryem-alysson-kheira-ines</p>
     </footer>
