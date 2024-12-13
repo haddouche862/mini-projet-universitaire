@@ -188,7 +188,7 @@ foreach ($student_schedule as $course) {
                     </div>
                 <?php } ?>
             </div>
-            <a class="btn" href="#.php" class="btn">Voir mes Cours</a>
+            <a class="btn" href="liste_promo.php" class="btn">Voir mes Cours</a>
         </section>
 
     </main>
