@@ -173,7 +173,6 @@ foreach ($student_schedule as $course) {
                     <?php } ?>
                 </tbody>
             </table>
-            <a  class="btn" href="#.php" class="btn">Voir mes Devoirs</a>
         </section>
 
 
