@@ -47,29 +47,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/style.css">
     <title>Page de connexion</title>
 </head>
 <body>
     <div class="container">
-        <h2>Connexion</h2>
-        <form action="login.php" method="POST">
-            <div class="form-group">
-                <label for="username">Nom d'utilisateur :</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Mot de passe :</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Se connecter</button>
-        </form>
-        <?php if (!empty($error)): ?>
-            <p class="error"><?php echo htmlspecialchars($error); ?></p>
-        <?php endif; ?>
+        <div class="login">
+            <h1>Bienvenue dans votre espace de connexion de l'Université !</h1>
+        <main class="main-content">
+            <h2>Veuillez entrer vos informations d'authentification</h2>
+            <form action="login.php" method="POST" class="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Nom d'utilisateur :</label>
+                    <input type="text" id="username" name="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Mot de passe :</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                <button class="btn" type="submit">Se connecter</button>
+            </form>
+            <?php if (!empty($error)): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
+        </main>
+        </div>
     </div>
-
     <footer>
-        <p>&copy; Maryem-alysson-kheira-ines</p>
+        <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
 </body>
 </html>
