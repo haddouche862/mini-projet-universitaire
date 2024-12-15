@@ -113,7 +113,7 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <br><br>
     <!-- Retour à l'accueil -->
     <fieldset class="fieldset">
-        <form method="post" action="index.php">
+        <form method="post" action="index_etudiant.php">
             <input type="submit" value="Retour à la page d'accueil">
         </form>
     </fieldset>
