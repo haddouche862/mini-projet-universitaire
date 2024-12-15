@@ -29,7 +29,7 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
     <title>Mes cours</title>
 </head>
 <body>
@@ -76,9 +76,9 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <!-- Boutons pour chaque devoir -->
                             <form method="post">
                                 <input type="hidden" name="id_devoir" value="<?= htmlspecialchars($course['id_devoir']) ?>">
-                                <button type="submit" name="action" value="ajouter">Ajouter un devoir</button>
-                                <button type="submit" name="action" value="modifier">Modifier le devoir</button>
-                                <button type="submit" name="action" value="supprimer">Supprimer le devoir</button>
+                                <button class="btn btn-ajouter" type="submit" name="action" value="ajouter">Ajouter un devoir</button>
+                                <button class="btn btn-modifier" type="submit" name="action" value="modifier">Modifier le devoir</button>
+                                <button class="btn btn-supprimer" type="submit" name="action" value="supprimer">Supprimer le devoir</button>
                             </form>
                         </div>
                     <?php endif; ?>
@@ -87,6 +87,8 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
 
         <!-- Formulaire Ajouter -->
+
+    <div class="form-devoirs">
         <?php if (isset($_POST['action']) && $_POST['action'] === 'ajouter'): ?>
             <form method="post" action="ajouter_devoir.php">
                 <h2>Ajouter un devoir</h2>
@@ -130,6 +132,7 @@ $cours = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <input type="submit" name="action" value="suppr_confirm">Supprimer</input>
             </form>
         <?php endif; ?>
+    </div>
     </div>
 </body>
 </html>
