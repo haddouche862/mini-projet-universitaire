@@ -160,6 +160,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
     <title>Gestion des enseignants</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <div class="container">
@@ -191,7 +192,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Appliquer</button>
         </form>
         
-        <table border="1">
+        <table>
             <tr>
                 <th>ID</id>
                 <th>Identifiants</th>
@@ -203,7 +204,8 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
                 <tr>
                     <td><?php echo htmlspecialchars($enseignant['id']); ?></td>
                     <td><?php echo htmlspecialchars($enseignant['identifiant']); ?></td>
-                    <td><?php echo htmlspecialchars($enseignant['role']); ?></td> <!-- Affichage du rôle -->
+                    <td><?php echo htmlspecialchars($enseignant['role']); ?></td> 
+                    <!-- Affichage du rôle -->
                     <td>
                         <?php
                         $query = "SELECT c.nom FROM cours c 
@@ -216,7 +218,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
                         ?>
                     </td>
                     <td>
-                        <form method="POST" style="display: inline;">
+                        <form method="POST">
                             <input type="hidden" name="action" value="supprimer_enseignant">
                             <input type="hidden" name="id_prof" value="<?php echo $enseignant['id']; ?>">
                             <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?');">Supprimer</button>
@@ -279,10 +281,10 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Ajouter</button>
         </form>
         </div>
-        <a class="btn" href="index.php">Page Accueil</a>
-        <a class="btn" href="gestion-etudiant.php">Gestion étudiant</a>
-
-        
+        <div class="centered-buttons">
+            <a class="btn" href="index.php">Page Accueil</a>
+            <a class="btn" href="gestion-etudiant.php">Gestion étudiant</a>
+        </div>
     <footer>
         <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
