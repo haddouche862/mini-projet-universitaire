@@ -229,8 +229,8 @@ $teachers = getTeachers();
 
     <?php } ?>
 </main>
-<footer>
-        <p>&copy; Maryem-alysson-kheira-ines</p>
+    <footer>
+        <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
 </body>
 </html>
