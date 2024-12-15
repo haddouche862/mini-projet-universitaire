@@ -6,40 +6,52 @@ $error = '';
 
 // Vérification 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $identifiant = $_POST['username']; 
-    $password = $_POST['password'];
+    // Vérification si les champs sont définis
+    if (isset($_POST['username'], $_POST['password'])) {
+        // Récupération et sécurisation des entrées utilisateur
+        $identifiant = htmlspecialchars(trim($_POST['username'])); 
+        $password = htmlspecialchars(trim($_POST['password']));
 
-   
-    $query = "SELECT id, role, motdepasse FROM enseignants WHERE identifiant = ?";
-    $stmt = $bdd->prepare($query);
-    $stmt->execute([$identifiant]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Vérification des types et longueurs
+        if (gettype($identifiant) === 'string' && strlen($identifiant) > 0 && strlen($identifiant) <= 255 &&
+            gettype($password) === 'string' && strlen($password) > 0 && strlen($password) <= 255) {
 
-    if ($user && $password === $user['motdepasse']) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = 'prof'; 
-        $_SESSION['username'] = $identifiant;
-        header('Location: index.php');
-        exit;
+            // Vérifier dans la table enseignants
+            $query = "SELECT id, role, motdepasse FROM enseignants WHERE identifiant = ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$identifiant]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && $password === $user['motdepasse']) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_role'] = 'prof'; 
+                $_SESSION['username'] = $identifiant;
+                header('Location: index.php');
+                exit;
+            }
+
+            // Si non trouvé dans enseignants, vérifier dans  étudiants
+            $query = "SELECT id, role, motdepasse FROM etudiants WHERE identifiant = ?";
+            $stmt = $bdd->prepare($query);
+            $stmt->execute([$identifiant]);
+            $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($student && $password === $student['motdepasse']) {
+                $_SESSION['user_id'] = $student['id'];
+                $_SESSION['user_role'] = 'etudiant'; 
+                $_SESSION['username'] = $identifiant;
+                header('Location: index_etudiant.php');
+                exit;
+            }
+
+            $error = "Nom d'utilisateur ou mot de passe incorrect.";
+        } else {
+            $error = "Les identifiants fournis ne sont pas valides.";
+        }
+    } else {
+        $error = "Veuillez remplir tous les champs.";
     }
-
-    // Si non trouvé dans enseignants, vérifier dans  étudiants
-    $query = "SELECT id, role, motdepasse FROM etudiants WHERE identifiant = ?";
-    $stmt = $bdd->prepare($query);
-    $stmt->execute([$identifiant]);
-    $student = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($student && $password === $student['motdepasse']) {
-        $_SESSION['user_id'] = $student['id'];
-        $_SESSION['user_role'] = 'etudiant'; 
-        $_SESSION['username'] = $identifiant;
-        header('Location: index_etudiant.php');
-        exit;
-    }
-
-    $error = "Nom d'utilisateur ou mot de passe incorrect.";
 }
-
 ?>
 
 <!DOCTYPE html>
