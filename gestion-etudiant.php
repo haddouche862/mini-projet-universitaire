@@ -190,7 +190,7 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <a class="btn" href="index.php">Page Accueil</a>
     <a class="btn" href="gestion-enseignant.php">Gestion enseignant</a>
     <footer>
-        <p>&copy; Maryem-alysson-kheira-ines</p>
+        <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
 </body>
 </html>
