@@ -192,7 +192,6 @@ foreach ($student_schedule as $course) {
         </section>
 
     </main>
-
     <footer>
         <p>&copy; Maryem-alysson-kheira-ines</p>
     </footer>
