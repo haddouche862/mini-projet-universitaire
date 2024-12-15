@@ -1,4 +1,4 @@
-/* Global */
+/* Général */
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
@@ -30,7 +30,7 @@ h2 {
     padding-bottom: 5px;
 }
 
-/* Navigation */
+/* Menu */
 nav ul {
     list-style: none;
     padding: 0;
@@ -57,7 +57,17 @@ nav ul li a:hover {
     background-color: #93b39f;
 }
 
-/* Table */
+/* Tableaux */
+
+table th, table td {
+    font-size: 14px;
+    padding: 12px;
+}
+
+table td {
+    text-align: center;
+} 
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -89,7 +99,7 @@ table th {
     font-size: 16px;
 }
 
-/* Alerts */
+/* Alertes */
 .alert {
     padding: 10px;
     margin: 20px 0;
@@ -107,7 +117,7 @@ table th {
     color: white;
 }
 
-/* Forms */
+/* Formulaire */
 form {
     margin-top: 20px;
     background-color: #fff;
@@ -165,7 +175,7 @@ footer p {
     margin: 0;
 }
 
-/* Buttons */
+/* Boutons */
 .btn {
     display: inline-block;
     background-color: #5e777c;
@@ -199,7 +209,7 @@ footer p {
 }
 
 
-/* Table actions (Delete, Assign, Add) */
+/* Boutons formulaire */
 form[action="supprimer_enseignant"] button,
 form[action="attribuer_cours"] button,
 form[action="ajouter_enseignant"] button {
@@ -221,23 +231,12 @@ form[action="ajouter_enseignant"] button:hover {
     background-color: #c0392b;
 }
 
-/* Select menus */
 select {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
     font-size: 14px;
-}
-
-/* Miscellaneous Styling */
-table th, table td {
-    font-size: 14px;
-    padding: 12px;
-}
-
-table td {
-    text-align: center;
 }
 
 .alert {
