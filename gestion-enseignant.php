@@ -284,7 +284,7 @@ $cours = $stmt_cours->fetchAll(PDO::FETCH_ASSOC);
 
         
     <footer>
-        <p>&copy; Maryem-alysson-kheira-ines</p>
+        <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
 </body>
 </html>
