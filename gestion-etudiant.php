@@ -110,6 +110,7 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Gestion des étudiants</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <div class="container">
@@ -187,8 +188,10 @@ $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit">Ajouter</button>
         </form>
     </div>
-    <a class="btn" href="index.php">Page Accueil</a>
-    <a class="btn" href="gestion-enseignant.php">Gestion enseignant</a>
+    <div class="centered-buttons">
+            <a class="btn" href="index.php">Page Accueil</a>
+            <a class="btn" href="gestion-etudiant.php">Gestion étudiant</a>
+        </div>
     <footer>
         <p>&copy; Maryem - Alyson - Kheira - Ines</p>
     </footer>
